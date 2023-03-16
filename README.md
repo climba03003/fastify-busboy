@@ -91,6 +91,79 @@ fastify.register(FastifyBusboy, {
 })
 ```
 
+### Error Handling
+
+You can handle the error from either `setErrorHandler` or using `try-catch` with `request.parseMultipart()`
+
+```ts
+import FastifyBusboy from 'fastify-busboy'
+
+fastify.register(FastifyBusboy)
+
+fastify.post('/', async function(request, reply) {
+  try {
+    // you need to call the parser if you do not pass any option through plugin registration
+    await request.parseMultipart()
+  } catch (err) {
+    switch(err.code) {
+      case 'FST_BB_FIELD_SIZE_LIMIT': {
+        // field size limit reached
+        break
+      }
+      case 'FST_BB_FIELDS_LIMIT': {
+        // fields limit reached
+        break
+      }
+      case 'FST_BB_FILE_SIZE_LIMIT': {
+        // file size limit reached
+        break
+      }
+      case 'FST_BB_FILES_LIMIT': {
+        // files limit reached
+        break
+      }
+      case 'FST_BB_PARTS_LIMIT': {
+        // parts limit reached
+        break
+      }
+      default: {
+        // unknown error
+        // maybe write stream error
+      }
+    }
+  }
+})
+
+fastify.setErrorHandler(function(err) {
+  switch(err.code) {
+    case 'FST_BB_FIELD_SIZE_LIMIT': {
+      // field size limit reached
+      break
+    }
+    case 'FST_BB_FIELDS_LIMIT': {
+      // fields limit reached
+      break
+    }
+    case 'FST_BB_FILE_SIZE_LIMIT': {
+      // file size limit reached
+      break
+    }
+    case 'FST_BB_FILES_LIMIT': {
+      // files limit reached
+      break
+    }
+    case 'FST_BB_PARTS_LIMIT': {
+      // parts limit reached
+      break
+    }
+    default: {
+      // unknown error
+      // maybe write stream error
+    }
+  }
+})
+```
+
 ### Integration
 
 It is a known limitation for `fastify-multipart` integrate with `fastify-swagger` and this plugin provide a relatively simple solution for the integration.

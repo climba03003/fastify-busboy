@@ -10,7 +10,7 @@ const filePath = path.join(__dirname, '../package.json')
 
 t.plan(1)
 t.test('error', function (t) {
-  t.plan(6)
+  t.plan(7)
 
   t.test('`addContentTypeParser` and `addHooks`', async function (t) {
     t.plan(2)
@@ -26,7 +26,7 @@ t.test('error', function (t) {
   })
 
   t.test('fields', async function (t) {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = await createFastify(t, { busboy: { limits: { fields: 0 } } }, true)
 
@@ -36,11 +36,14 @@ t.test('error', function (t) {
 
     const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
 
-    t.equal(response.status, 500)
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_FIELDS_LIMIT')
   })
 
   t.test('fieldSize', async function (t) {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = await createFastify(t, { busboy: { limits: { fieldSize: 0 } } }, true)
 
@@ -50,11 +53,14 @@ t.test('error', function (t) {
 
     const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
 
-    t.equal(response.status, 500)
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_FIELD_SIZE_LIMIT')
   })
 
   t.test('files', async function (t) {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = await createFastify(t, { busboy: { limits: { files: 0 } } }, true)
 
@@ -64,11 +70,14 @@ t.test('error', function (t) {
 
     const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
 
-    t.equal(response.status, 500)
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_FILES_LIMIT')
   })
 
   t.test('fileSize', async function (t) {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = await createFastify(t, { busboy: { limits: { fileSize: 0 } } }, true)
 
@@ -78,11 +87,31 @@ t.test('error', function (t) {
 
     const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
 
-    t.equal(response.status, 500)
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_FILE_SIZE_LIMIT')
+  })
+
+  t.test('parts', async function (t) {
+    t.plan(2)
+
+    const fastify = await createFastify(t, { busboy: { limits: { parts: 0 } } }, true)
+
+    const form = new FormData()
+    form.append('foo', 'bar')
+    form.append('file', fs.createReadStream(filePath))
+
+    const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
+
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_PARTS_LIMIT')
   })
 
   t.test('fileSize - non-block stream', async function (t) {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = await createFastify(t, { busboy: { limits: { fileSize: 0 } } }, true)
 
@@ -94,6 +123,9 @@ t.test('error', function (t) {
 
     const response = await request(`http://localhost:${(fastify.server.address() as AddressInfo).port}`, form)
 
-    t.equal(response.status, 500)
+    t.equal(response.status, 413)
+
+    const json = await response.json()
+    t.equal(json.code, 'FST_BB_FILE_SIZE_LIMIT')
   })
 })

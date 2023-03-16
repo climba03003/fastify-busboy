@@ -5,6 +5,7 @@ import FastifyPlugin from 'fastify-plugin'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
+import { FST_BB_CONFLICT_CONFIG, FST_BB_FIELDS_LIMIT, FST_BB_FIELD_SIZE_LIMIT, FST_BB_FILES_LIMIT, FST_BB_FILE_SIZE_LIMIT, FST_BB_PARTS_LIMIT } from './error'
 
 export const kIsMultipart = Symbol.for('[FastifyMultipart.isMultipart]')
 export const kIsMultipartParsed = Symbol.for('[FastifyMultipart.isMultipartParsed]')
@@ -80,13 +81,13 @@ function buildRequestParser (config: BusboyConfig): (request: FastifyRequest, op
 
       busboy.on('field', function (name, value, info) {
         if (info.valueTruncated) {
-          error = Error('Field Size Limit Reached')
+          error = FST_BB_FIELD_SIZE_LIMIT(name)
           return
         }
         update(body, name, value)
       })
       busboy.on('fieldsLimit', function () {
-        error = Error('Fields Limit Reached')
+        error = FST_BB_FIELDS_LIMIT()
       })
       busboy.on('file', function (name, value, info) {
         // we auto skip when error exists
@@ -98,7 +99,7 @@ function buildRequestParser (config: BusboyConfig): (request: FastifyRequest, op
         const filepath = path.join(uploadDir, filename)
         const stream = fs.createWriteStream(filepath)
         value.on('limit', function () {
-          error = Error('File Size Limit Reached')
+          error = FST_BB_FILE_SIZE_LIMIT(name)
         })
         // safe guard for unknown error
         // we do not test this branch
@@ -118,7 +119,10 @@ function buildRequestParser (config: BusboyConfig): (request: FastifyRequest, op
         value.pipe(stream)
       })
       busboy.on('filesLimit', function () {
-        error = Error('Files Limit Reached')
+        error = FST_BB_FILES_LIMIT()
+      })
+      busboy.on('partsLimit', function () {
+        error = FST_BB_PARTS_LIMIT()
       })
       busboy.on('close', onDone)
       busboy.on('finish', onDone)
@@ -154,7 +158,7 @@ const plugin: FastifyPluginAsync<FastifyBusboyOptions> = async function (fastify
   })
 
   if (options.addContentTypeParser === true && options.addHooks === true) {
-    throw new Error('Cannot enable `addContentTypeParser` togather with `addHooks`')
+    throw FST_BB_CONFLICT_CONFIG()
   }
 
   if (options.addContentTypeParser === true) {
