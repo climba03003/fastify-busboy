@@ -40,26 +40,26 @@
   "dependencies": {
     "@types/busboy": "^1.5.0",
     "busboy": "^1.6.0",
-    "fastify-plugin": "^4.5.0"
+    "fastify-plugin": "^4.5.1"
   },
   "devDependencies": {
-    "@fastify/swagger": "^8.3.1",
-    "@types/node": "^20.0.0",
+    "@fastify/swagger": "^8.8.0",
+    "@types/node": "^20.4.2",
     "@types/tap": "^15.0.8",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "ajv": "^8.12.0",
-    "eslint": "^8.36.0",
-    "eslint-config-standard-with-typescript": "^36.0.0",
+    "eslint": "^8.45.0",
+    "eslint-config-standard-with-typescript": "^36.1.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.1",
     "eslint-plugin-promise": "^6.1.1",
-    "fastify": "^4.14.1",
+    "fastify": "^4.20.0",
     "form-data": "^4.0.0",
-    "tap": "^16.3.4",
+    "tap": "^16.3.7",
     "ts-node": "^10.9.1",
-    "tsc-alias": "^1.8.3",
-    "typescript": "~5.0.2",
-    "undici": "^5.21.0"
+    "tsc-alias": "^1.8.7",
+    "typescript": "~5.1.6",
+    "undici": "^5.22.1"
   }
 }
